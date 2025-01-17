@@ -1,0 +1,36 @@
+function doPost(e) {
+  if (!e || !e.postData || !e.postData.contents) {
+    return ContentService.createTextOutput("Error: No data received");
+  }
+
+  const data = JSON.parse(e.postData.contents); // รับ JSON ที่ส่งมา
+  const dailyCount = data.dailyCount;           // จำนวนรถที่เข้าจอดทั้งวัน
+  const events = data.events;                  // รายการ events
+
+  const dailyCountSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("DailyCount");
+  const eventLogSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("EventLog");
+
+  // บันทึก dailyCount ลงในชีท
+  const today = Utilities.formatDate(new Date(), "Asia/Bangkok", "yyyy-MM-dd");
+  const lastRow = dailyCountSheet.getLastRow();
+  let lastDate = "";
+
+  // ตรวจสอบว่ามีข้อมูลในชีทหรือไม่
+  if (lastRow > 0) {
+    lastDate = dailyCountSheet.getRange(lastRow, 1).getValue();
+    lastDate = Utilities.formatDate(new Date(lastDate), "Asia/Bangkok", "yyyy-MM-dd"); // แปลง lastDate ให้เป็นรูปแบบ yyyy-MM-dd
+  }
+
+  if (lastDate !== today) {
+    dailyCountSheet.appendRow([today, dailyCount]);
+  } else {
+    dailyCountSheet.getRange(lastRow, 2).setValue(dailyCount);
+  }
+
+  // บันทึก events ลงในชีท
+  events.forEach(event => {
+    eventLogSheet.appendRow([event.action, event.slot, event.date, event.time]);
+  });
+
+  return ContentService.createTextOutput("Success");
+}
