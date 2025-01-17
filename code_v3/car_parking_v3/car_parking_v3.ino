@@ -34,9 +34,9 @@ const int SERVO_PIN = 26;
 const int LCD_COLS = 16;
 const int LCD_ROWS = 2;
 
-const char* ssid = "";
-const char* password = "";
-const String webAppURL = "";
+const char* ssid = "...";
+const char* password = "...";
+const String webAppURL = "...";
 
 int spaceAvailable = 4;
 int spaceAvailableTotal = 4;
